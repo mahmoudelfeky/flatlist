@@ -2,8 +2,6 @@ import { GET_DATA} from "../actions/actionTypes";
     initialState = {
       loading: false,
       data: [],
-      page: 1,
-      seed: 1,
       error: null,
       refreshing: false,
     };

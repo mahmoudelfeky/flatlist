@@ -2,19 +2,20 @@ import React, { Component } from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, ToastAndroid } from "react-native";
 import { List, SearchBar } from "react-native-elements"
 import Item from "../Item/Item";
-import {connect} from "react-redux";
-import { getData } from "../../store/actions/data";
+import { connect } from "react-redux";
+import { getData, handleMore } from "../../store/actions/data";
 import { ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
 
 class ListContainer extends Component {
-
-
-
-  componentDidMount() {
-    this.props.fetchData(this.props.seed,this.props.page,this.props.data);
+  state = {
+    page: 1,
+    seed: 1
   }
 
-  
+  componentDidMount() {
+    this.props.fetchData(this.state.seed, this.state.page, this.props.data);
+  }
+
 
   // handleRefresh = () => {
   //   alert()
@@ -26,50 +27,52 @@ class ListContainer extends Component {
 
   // }
 
-  // handleMore = () => {
-  //   this.setState({
-  //     page: this.state.page + 1
-  //   }, () => this.makeRemoteRequest())
-  // }
+ handleMore = () => {
+   alert("handle more")
+    this.setState({
+      page: this.state.page + 1
+    }, () => this.props.fetchData(this.state.seed,this.state.page,this.props.data))
+  }
+
 
   renderHeader = () => {
     return (
       <SearchBar round placeholder="Type Here..." />
     )
   }
-  // renderSeparator = () => {
-  //   return (
-  //     <View
-  //       style={styles.seperator} />
-  //   )
-  // }
-  // renderFooter = () => {
-  //   if (!this.state.loading) return null;
+  renderSeparator = () => {
+    return (
+      <View
+        style={styles.seperator} />
+    )
+  }
+  renderFooter = () => {
+    if (!this.props.loading) return null;
 
-  //   return (
-  //     <View
-  //       style={{
-  //         paddingVertical: 20,
-  //         borderTopWidth: 1,
-  //         borderColor: "#CED0CE",
-  //         marginTop: 10
-  //       }}
-  //     >
-  //       <ActivityIndicator animating size="large" />
-  //     </View>
-  //   );
-  // }
+    return (
+      <View
+        style={{
+          paddingVertical: 20,
+          borderTopWidth: 1,
+          borderColor: "#CED0CE",
+          marginTop: 10
+        }}
+      >
+        <ActivityIndicator animating size="large" />
+      </View>
+    );
+  }
   render() {
-    
-    alert(this.props.data.coun);
+
     return (
       <FlatList
         style={{ flex: 1 }}
         ListHeaderComponent={this.renderHeader}
-        ListFooterComponent={this.renderFooter}
         ItemSeparatorComponent={this.renderSeparator}
         data={this.props.data}
         keyExtractor={item => item.email}
+
+        ListFooterComponent={this.renderFooter}
         refreshing={this.props.refreshing}
         onRefresh={this.handleRefresh}
         onEndReached={this.handleMore}
@@ -119,19 +122,20 @@ const styles = StyleSheet.create({
     borderColor: "#CED0CE"
   }
 })
-const mapDispatchToProps = dispatch=>{
+const mapDispatchToProps = dispatch => {
   return {
-    fetchData:(seed,page,data)=>dispatch(getData(seed,page,data))
+    fetchData: (seed, page, data) => dispatch(getData(seed, page, data)),
+    onhandeleMore: (data) => dispatch(handleMore(data))
   }
 }
-const mapstateToProps = state=>{
-  return{
+const mapstateToProps = state => {
+  return {
     loading: state.data.loading,
-      data:state.data.data,
-      page: state.data.page,
-      seed: state.data.seed,
-      error: state.data.error,
-      refreshing:state.data.error
+    data: state.data.data,
+    page: state.data.page,
+    seed: state.data.seed,
+    error: state.data.error,
+    refreshing: state.data.error
   }
 }
-export default connect(mapstateToProps,mapDispatchToProps)(ListContainer);
+export default connect(mapstateToProps, mapDispatchToProps)(ListContainer);

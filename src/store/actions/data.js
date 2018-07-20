@@ -1,34 +1,47 @@
-import {GET_DATA} from "./actionTypes";
-import { uiStartLoading,uiStopLoading } from "./ui";
-export const getData = (seed,page,data)=>{
-    return dispatch=>{
-        dispatch(uiStartLoading)
-    const url = `https://randomuser.me/api/?seed=${seed}&page=${page}&results=20`;
-    fetch(url)
-      .then(res => res.json())
-      .then(res => {
+import { GET_DATA } from "./actionTypes";
+import { uiStartLoading, uiStopLoading } from "./ui";
+export const getData = (seed, page, data) => {
 
-        setTimeout(() => {
-            dispatch(
-         setData({
-            data: page === 1 ? res.results : [data, ...res.results],
-            error: res.error || null,
-            loading: false,
-            refreshing: false
-          })
-        );
-        }, 2000)
-      })
-      .catch(error => {
-        dispatch(uiStopLoading)
-      });
+    return dispatch => {
+        // dispatch(uiStartLoading)
+        const url = `https://randomuser.me/api/?seed=${seed}&page=${page}&results=20`;
+        fetch(url)
+            .then(res => res.json())
+            .then(res => {
+                alert("sucees")
+                setTimeout(() => {
+                    dispatch(
+                        setData({
+                            data: page === 1 ? res.results : [...data, ...res.results],
+                            error: res.error || null,
+                            loading: false,
+                            refreshing: false
+                        })
+                    );
+                }, 2000)
+            })
+            .catch(error => {
+                alert("failed")
+                // dispatch(uiStopLoading)
+                dispatch(setData({
+                    refreshing: false
+                }))
+            });
     }
 }
 
-const setData = data =>
-{
-    return{
-        type:GET_DATA,
+export const setData = data => {
+    return {
+        type: GET_DATA,
         data
+    }
+}
+export const handleMore = data => {
+    return dispatch=>{
+    dispatch(
+        setData({
+            page: data.page
+        }))
+    dispatch( getData(data.seed,data.page,data.data))
     }
 }
