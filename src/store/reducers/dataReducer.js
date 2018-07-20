@@ -8,12 +8,12 @@ import { GET_DATA} from "../actions/actionTypes";
       refreshing: false,
     };
 
-    const reducer = (state = initialState , action)=>{
+    export default reducer = (state = initialState , action)=>{
         switch(action.type){
             case GET_DATA:
             return{
                 ...state,
-                ...action.payload
+                ...action.data
             }
             break;
             default:

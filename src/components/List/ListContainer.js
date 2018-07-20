@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, ToastAndroid } from "react-native";
 import { List, SearchBar } from "react-native-elements"
 import Item from "../Item/Item";
-
+import {connect} from "react-redux";
+import { getData } from "../../store/actions/data";
 import { ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
 
 class ListContainer extends Component {
@@ -10,85 +11,66 @@ class ListContainer extends Component {
 
 
   componentDidMount() {
-    this.makeRemoteRequest();
+    this.props.fetchData(this.props.seed,this.props.page,this.props.data);
   }
 
-  makeRemoteRequest = () => {
-    const { page, seed } = this.state;
-    const url = `https://randomuser.me/api/?seed=${seed}&page=${page}&results=20`;
-    this.setState({ loading: true });
-    fetch(url)
-      .then(res => res.json())
-      .then(res => {
+  
 
-        setTimeout(() => {
-          this.setState({
-            data: page === 1 ? res.results : [...this.state.data, ...res.results],
-            error: res.error || null,
-            loading: false,
-            refreshing: false
-          });
-        }, 2000)
-      })
-      .catch(error => {
-        this.setState({ error, loading: false, refreshing: false });
-      });
-  };
+  // handleRefresh = () => {
+  //   alert()
+  //   this.setState({
+  //     page: 1,
+  //     refreshing: true,
+  //     seed: this.state.seed + 1
+  //   }, () => this.makeRemoteRequest())
 
-  handleRefresh = () => {
-    alert()
-    this.setState({
-      page: 1,
-      refreshing: true,
-      seed: this.state.seed + 1
-    }, () => this.makeRemoteRequest())
+  // }
 
-  }
-
-  handleMore = () => {
-    this.setState({
-      page: this.state.page + 1
-    }, () => this.makeRemoteRequest())
-  }
+  // handleMore = () => {
+  //   this.setState({
+  //     page: this.state.page + 1
+  //   }, () => this.makeRemoteRequest())
+  // }
 
   renderHeader = () => {
     return (
       <SearchBar round placeholder="Type Here..." />
     )
   }
-  renderSeparator = () => {
-    return (
-      <View
-        style={styles.seperator} />
-    )
-  }
-  renderFooter = () => {
-    if (!this.state.loading) return null;
+  // renderSeparator = () => {
+  //   return (
+  //     <View
+  //       style={styles.seperator} />
+  //   )
+  // }
+  // renderFooter = () => {
+  //   if (!this.state.loading) return null;
 
-    return (
-      <View
-        style={{
-          paddingVertical: 20,
-          borderTopWidth: 1,
-          borderColor: "#CED0CE",
-          marginTop: 10
-        }}
-      >
-        <ActivityIndicator animating size="large" />
-      </View>
-    );
-  }
+  //   return (
+  //     <View
+  //       style={{
+  //         paddingVertical: 20,
+  //         borderTopWidth: 1,
+  //         borderColor: "#CED0CE",
+  //         marginTop: 10
+  //       }}
+  //     >
+  //       <ActivityIndicator animating size="large" />
+  //     </View>
+  //   );
+  // }
   render() {
+    
+    alert(this.props.data.coun);
     return (
-
       <FlatList
         style={{ flex: 1 }}
         ListHeaderComponent={this.renderHeader}
         ListFooterComponent={this.renderFooter}
         ItemSeparatorComponent={this.renderSeparator}
-        data={this.state.data}
+        data={this.props.data}
         keyExtractor={item => item.email}
-        refreshing={this.state.refreshing}
+        refreshing={this.props.refreshing}
         onRefresh={this.handleRefresh}
         onEndReached={this.handleMore}
         onEndReachedThreshold={.5}
@@ -137,5 +119,19 @@ const styles = StyleSheet.create({
     borderColor: "#CED0CE"
   }
 })
-
-export default ListContainer;
+const mapDispatchToProps = dispatch=>{
+  return {
+    fetchData:(seed,page,data)=>dispatch(getData(seed,page,data))
+  }
+}
+const mapstateToProps = state=>{
+  return{
+    loading: state.data.loading,
+      data:state.data.data,
+      page: state.data.page,
+      seed: state.data.seed,
+      error: state.data.error,
+      refreshing:state.data.error
+  }
+}
+export default connect(mapstateToProps,mapDispatchToProps)(ListContainer);
