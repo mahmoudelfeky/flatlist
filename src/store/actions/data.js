@@ -3,12 +3,15 @@ import { uiStartLoading, uiStopLoading } from "./ui";
 export const getData = (seed, page, data) => {
 
     return dispatch => {
-        // dispatch(uiStartLoading)
+        dispatch(
+            setData({
+                loading: true
+            }))
         const url = `https://randomuser.me/api/?seed=${seed}&page=${page}&results=20`;
         fetch(url)
             .then(res => res.json())
             .then(res => {
-                alert("sucees")
+                // alert("sucees")
                 setTimeout(() => {
                     dispatch(
                         setData({
@@ -21,8 +24,11 @@ export const getData = (seed, page, data) => {
                 }, 2000)
             })
             .catch(error => {
-                alert("failed")
-                // dispatch(uiStopLoading)
+                // alert("failed")
+                dispatch(
+                    setData({
+                        loading: true
+                    }))
                 dispatch(setData({
                     refreshing: false
                 }))
@@ -37,11 +43,11 @@ export const setData = data => {
     }
 }
 export const handleMore = data => {
-    return dispatch=>{
-    dispatch(
-        setData({
-            page: data.page
-        }))
-    dispatch( getData(data.seed,data.page,data.data))
+    return dispatch => {
+        dispatch(
+            setData({
+                page: data.page
+            }))
+        dispatch(getData(data.seed, data.page, data.data))
     }
 }

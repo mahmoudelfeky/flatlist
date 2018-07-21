@@ -1,20 +1,29 @@
-import { GET_DATA} from "../actions/actionTypes";    
-    initialState = {
-      loading: false,
-      data: [],
-      error: null,
-      refreshing: false,
-    };
+import { GET_DATA, UI_START_LOADING, UI_STOP_LOADING } from "../actions/actionTypes";
+initialState = {
+    loading: false,
+    data: [],
+    error: null,
+    refreshing: false
+};
 
-    export default reducer = (state = initialState , action)=>{
-        switch(action.type){
-            case GET_DATA:
-            return{
+export default reducer = (state = initialState, action) => {
+    switch (action.type) {
+        case GET_DATA:
+            return {
                 ...state,
                 ...action.data
             }
-            break;
-            default:
+        case UI_START_LOADING:
+            return {
+                ...state,
+                loading: true
+            }
+        case UI_STOP_LOADING:
+            return {
+                ...state,
+                loading: false
+            }
+        default:
             return state
-        }
     }
+}

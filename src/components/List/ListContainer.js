@@ -1,15 +1,16 @@
 import React, { Component } from "react";
 import { View, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, ToastAndroid } from "react-native";
-import { List, SearchBar } from "react-native-elements"
+import { List } from "react-native-elements"
 import Item from "../Item/Item";
 import { connect } from "react-redux";
 import { getData, handleMore } from "../../store/actions/data";
-import { ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
+import { ListItem, Left, Body, Right, Thumbnail, Text,SearchBar } from 'native-base';
 
 class ListContainer extends Component {
   state = {
     page: 1,
-    seed: 1
+    seed: 1,
+    refreshing: false
   }
 
   componentDidMount() {
@@ -17,18 +18,16 @@ class ListContainer extends Component {
   }
 
 
-  // handleRefresh = () => {
-  //   alert()
-  //   this.setState({
-  //     page: 1,
-  //     refreshing: true,
-  //     seed: this.state.seed + 1
-  //   }, () => this.makeRemoteRequest())
+  handleRefresh = () => {
+    this.setState({
+      page: 1,
+      refreshing: true,
+      seed: this.state.seed + 1
+    }, () => this.props.fetchData(this.state.seed,this.state.page,this.props.data))
 
-  // }
+  }
 
  handleMore = () => {
-   alert("handle more")
     this.setState({
       page: this.state.page + 1
     }, () => this.props.fetchData(this.state.seed,this.state.page,this.props.data))
@@ -47,6 +46,7 @@ class ListContainer extends Component {
     )
   }
   renderFooter = () => {
+    // alert(this.props.loading)
     if (!this.props.loading) return null;
 
     return (
@@ -135,7 +135,7 @@ const mapstateToProps = state => {
     page: state.data.page,
     seed: state.data.seed,
     error: state.data.error,
-    refreshing: state.data.error
+    refreshing: state.data.refreshing
   }
 }
 export default connect(mapstateToProps, mapDispatchToProps)(ListContainer);
